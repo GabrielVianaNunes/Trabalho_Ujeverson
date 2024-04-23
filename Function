@@ -1,0 +1,72 @@
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class Function {
+    
+    private String expressao;
+
+    public Function(String expressao) {
+        this.expressao = expressao;
+    }
+
+    public String calcularDerivada() {
+        StringBuilder derivada = new StringBuilder();
+
+        // RegEx para encontrar termos na expressão da função
+        Pattern termoPadrao = Pattern.compile("([-+]?\\d*\\.?\\d*)?x(\\^([-+]?\\d*\\.?\\d*))?");
+        Matcher correspondente = termoPadrao.matcher(expressao);
+
+        boolean primeiroTermo = true;
+
+        while (correspondente.find()) {
+            double coeficiente = 0;
+            int expoente = 1;
+
+            // Coeficiente
+            String coeficienteStr = correspondente.group(1);
+            if (coeficienteStr != null && !coeficienteStr.isEmpty()) {
+                coeficiente = Double.parseDouble(coeficienteStr);
+            } else {
+                coeficiente = 1;
+            }
+
+            // Expoente
+            String expoenteStr = correspondente.group(3);
+            if (expoenteStr != null && !expoenteStr.isEmpty()) {
+                expoente = Integer.parseInt(expoenteStr);
+            }
+
+            // Calcula a derivada do termo
+            double coeficienteDerivada = coeficiente * expoente;
+            int expoenteDerivada = expoente - 1;
+
+            // Constrói o termo da derivada
+            if (coeficienteDerivada != 0) {
+                if (!primeiroTermo) {
+                    derivada.append(" + ");
+                }
+
+                // Adiciona o termo do coeficiente da derivada
+                derivada.append(coeficienteDerivada);
+
+                // Adiciona o termo do expoente e 'x' se o expoente for maior que 0
+                if (expoenteDerivada > 0) {
+                    derivada.append("x");
+                    if (expoenteDerivada != 1) {
+                        derivada.append("^").append(expoenteDerivada);
+                    }
+                }
+
+                primeiroTermo = false;
+            }
+        }
+
+        // Se a derivada for vazia, retorna '0'
+        if (derivada.length() == 0) {
+            derivada.append("0");
+        }
+
+        return derivada.toString();
+    }
+}
